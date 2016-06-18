@@ -4,6 +4,12 @@
     <service name="FrequenciaWebService">
       <implementation-class>ws.FrequenciaWebService</implementation-class>
     </service>
+    <service name="CategoriaWebService">
+      <implementation-class>ws.CategoriaWebService</implementation-class>
+    </service>
+    <service name="MovimentoWebService">
+      <implementation-class>ws.MovimentoWebService</implementation-class>
+    </service>
   </services>
   <clients/>
 </jax-ws>
