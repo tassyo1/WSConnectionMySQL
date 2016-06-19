@@ -31,8 +31,9 @@ public class MovimentoWebService {
     }
 
     @WebMethod(operationName = "inserir")
-    public String inserir(@WebParam(name = "data_lancamento") String data_lancamento, @WebParam(name = "saldo") Float saldo, @WebParam(name = "categoria_id") Integer categoria_id) throws SQLException, ClassNotFoundException {
-        return ejbRef.inserir(data_lancamento, saldo, categoria_id);
+    public String inserir(@WebParam(name = "data") String data, @WebParam(name = "saldo")
+            Float saldo_atual, @WebParam(name = "categoria_id") Integer categoria_id) throws SQLException, ClassNotFoundException {
+        return ejbRef.inserir(data, saldo_atual, categoria_id);
     }
 
     @WebMethod(operationName = "buscaTodosMovimentos")

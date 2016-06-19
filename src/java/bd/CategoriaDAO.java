@@ -23,11 +23,11 @@ public class CategoriaDAO {
         stmt = (Statement) banco.getConn().createStatement();
     }
 
-    public String inserir(String tipo, String nome, Integer frequencia_id, String data, Float valor)
+    public String inserirCat(String tipo, String nome, Integer frequencia_id, String data, Float valor)
     throws ClassNotFoundException, SQLException{
         this.iniciaBanco();
         pstmt = banco.getConn().prepareStatement("insert into categorias (tipo, nome, frequencia_id, " +
-                " data_agendada, valor) values (?,?,?,?,?");
+                " data_agendada, valor) values (?,?,?,?,?)");
         long resultado;
 
         pstmt.setString(1, tipo);

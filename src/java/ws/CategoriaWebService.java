@@ -31,8 +31,8 @@ public class CategoriaWebService {
     }
 
     @WebMethod(operationName = "inserir")
-    public String inserir(@WebParam(name = "tipo") String tipo, @WebParam(name = "nome") String nome, @WebParam(name = "frequencia_id") Integer frequencia_id, @WebParam(name = "data") String data, @WebParam(name = "valor") Float valor) throws ClassNotFoundException, SQLException {
-        return ejbRef.inserir(tipo, nome, frequencia_id, data, valor);
+    public String inserirCat(@WebParam(name = "tipo") String tipo, @WebParam(name = "nome") String nome, @WebParam(name = "frequencia_id") Integer frequencia_id, @WebParam(name = "data") String data, @WebParam(name = "valor") Float valor) throws ClassNotFoundException, SQLException {
+        return ejbRef.inserirCat(tipo, nome, frequencia_id, data, valor);
     }
 
     @WebMethod(operationName = "atualizar")

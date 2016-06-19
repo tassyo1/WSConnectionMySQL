@@ -24,15 +24,15 @@ public class MovimentoDAO {
         stmt = banco.getConn().createStatement();
 
     }
-    public String inserir(String data_lancamento, Float saldo, Integer categoria_id) throws  SQLException, ClassNotFoundException{
+    public String inserir(String data, Float saldo_atual, Integer categoria_id) throws  SQLException, ClassNotFoundException{
         this.iniciaBanco();
         pstmt = banco.getConn().prepareStatement("insert into movimentos (data_lancamento, saldo_atual," +
                 " categoria_id ) values(?,?,?)");
 
         long resultado;
 
-        pstmt.setString(1, data_lancamento);
-        pstmt.setString(2, saldo.toString());
+        pstmt.setString(1, data);
+        pstmt.setString(2, saldo_atual.toString());
         pstmt.setString(3, categoria_id.toString());
 
         resultado = pstmt.executeUpdate();
