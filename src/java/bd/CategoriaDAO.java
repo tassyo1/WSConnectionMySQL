@@ -1,10 +1,13 @@
 
 package bd;
 
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.ejb.Stateless;
 
@@ -17,14 +20,16 @@ public class CategoriaDAO {
      private Banco banco;
     private PreparedStatement pstmt;
     private Statement stmt;
-
+    SimpleDateFormat sf1 = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sf2 = new SimpleDateFormat("yyyy-MM-dd");
+    
     public void iniciaBanco() throws SQLException, ClassNotFoundException{
         banco = new Banco();
         stmt = (Statement) banco.getConn().createStatement();
     }
 
     public String inserirCat(String tipo, String nome, Integer frequencia_id, String data, Float valor)
-    throws ClassNotFoundException, SQLException{
+    throws ClassNotFoundException, SQLException, ParseException{
         this.iniciaBanco();
         pstmt = banco.getConn().prepareStatement("insert into categorias (tipo, nome, frequencia_id, " +
                 " data_agendada, valor) values (?,?,?,?,?)");
@@ -33,7 +38,10 @@ public class CategoriaDAO {
         pstmt.setString(1, tipo);
         pstmt.setString(2,nome);
         pstmt.setString(3, frequencia_id.toString());
-        pstmt.setString(4,data);
+
+        Date dt = sf1.parse(data);
+        String nova = sf2.format(dt);
+        pstmt.setString(4,nova);
         pstmt.setString(5,valor.toString());
 
         resultado = pstmt.executeUpdate();
@@ -46,7 +54,7 @@ public class CategoriaDAO {
     }
 
     public String atualizar(Integer id, String tipo, String nome, Integer frequencia_id, String data, Float valor )
-    throws ClassNotFoundException, SQLException{
+    throws ClassNotFoundException, SQLException, ParseException{
         this.iniciaBanco();
         pstmt = banco.getConn().prepareStatement("update categorias set tipo =? , set nome =? ," +
                 "set frequencia_id =? , set data_agendada =?, valor =? where id =?");
@@ -56,7 +64,9 @@ public class CategoriaDAO {
         pstmt.setString(1, tipo);
         pstmt.setString(2, nome);
         pstmt.setString(3, frequencia_id.toString());
-        pstmt.setString(4, data);
+        Date dt = sf1.parse(data);
+        String nova = sf2.format(dt);
+        pstmt.setString(4,nova);
         pstmt.setString(5, valor.toString());
         pstmt.setString(6, id.toString());
 
@@ -106,7 +116,7 @@ public class CategoriaDAO {
         return tem;
     }
 
-    public ArrayList<Categoria> listaTodasCategorias() throws SQLException, ClassNotFoundException{
+    public ArrayList<Categoria> listaTodasCategorias() throws SQLException, ClassNotFoundException, ParseException{
         this.iniciaBanco();
         String query = "select * from categorias order by nome";
 
@@ -118,7 +128,11 @@ public class CategoriaDAO {
             Categoria categoria = new Categoria();
             categoria.setId(rs.getInt("id"));
             categoria.setNome(rs.getString("nome"));
-            categoria.setDataAgendada(rs.getDate("data_agendada").toString());
+            
+            Date dt = sf2.parse(rs.getDate("data_agendada").toString());
+            String nova = sf1.format(dt);
+            
+            categoria.setDataAgendada(nova);
             categoria.setFrequencia_id(rs.getInt("frequencia_id"));
             categoria.setTipo(rs.getString("tipo"));
             categoria.setValor(rs.getFloat("valor"));
@@ -131,7 +145,7 @@ public class CategoriaDAO {
         return array;
     }
 
-    public Categoria buscaPorNome(String nome) throws SQLException, ClassNotFoundException{
+    public Categoria buscaPorNome(String nome) throws SQLException, ClassNotFoundException, ParseException{
         this.iniciaBanco();
         String query = "SELECT * FROM categorias where nome like '"+nome+"'";
 
@@ -142,7 +156,10 @@ public class CategoriaDAO {
         while (rs.next()) {
             categoria_model.setId(rs.getInt("id"));
             categoria_model.setNome(rs.getString("nome"));
-            categoria_model.setDataAgendada(rs.getDate("data_agendada").toString());
+            Date dt = sf2.parse(rs.getDate("data_agendada").toString());
+            String nova = sf1.format(dt);
+            
+            categoria_model.setDataAgendada(nova);
             categoria_model.setFrequencia_id(rs.getInt("frequencia_id"));
             categoria_model.setTipo(rs.getString("tipo"));
             categoria_model.setValor(rs.getFloat("valor"));
@@ -153,7 +170,7 @@ public class CategoriaDAO {
         return categoria_model;
     }
     // categoria com nome já existente
-    public Boolean validaNomeCategoria(String nome, Integer id) throws SQLException, ClassNotFoundException{
+    public Boolean validaNomeCategoria(String nome, Integer id) throws SQLException, ClassNotFoundException, ParseException{
         
         Boolean valida;
         Categoria categoria = this.buscaPorNome(nome);
@@ -178,12 +195,12 @@ public class CategoriaDAO {
         return valida;
     }
 
-
-    public ArrayList<Categoria> buscaCategoriasEventuais() throws SQLException {
-
-        String query = "select categorias.* from categorias left join movimentos on categorias.id = categoria_id where categoria_id is null "+
-        "and DATE (substr(data_agendada, 7, 4) || '-' || substr(data_agendada, 4, 2) || '-' || substr(data_agendada, 1, 2)) "+
-                "<= date('now') and frequencia_id = 1;";
+    public ArrayList<Categoria> buscaCategoriasEventuais() throws SQLException, ClassNotFoundException, ParseException{
+        this.iniciaBanco();
+        
+        String query = "select categorias.* from categorias left join movimentos on"
+                + " categorias.id = categoria_id where categoria_id is null "+
+        "and data_agendada <= date(now()) and frequencia_id = 1";
 
         ResultSet rs = stmt.executeQuery(query);
 
@@ -193,7 +210,10 @@ public class CategoriaDAO {
             Categoria categoria = new Categoria();
             categoria.setId(rs.getInt("id"));
             categoria.setNome(rs.getString("nome"));
-            categoria.setDataAgendada(rs.getDate("data_agendada").toString());
+            Date dt = sf2.parse(rs.getDate("data_agendada").toString());
+            String nova = sf1.format(dt);
+            
+            categoria.setDataAgendada(nova);
             categoria.setFrequencia_id(rs.getInt("frequencia_id"));
             categoria.setTipo(rs.getString("tipo"));
             categoria.setValor(rs.getFloat("valor"));
@@ -205,10 +225,10 @@ public class CategoriaDAO {
         return array;
     }
 
-    public ArrayList<Categoria> buscaCategoriasFrequentes() throws SQLException {
+    public ArrayList<Categoria> buscaCategoriasFrequentes() throws SQLException, ClassNotFoundException, ParseException {
+       this.iniciaBanco();
         String query = "select categorias.* from categorias where frequencia_id <> 1 " +
-                "and DATE (substr(data_agendada, 7, 4) || '-' || substr(data_agendada, 4, 2) || '-' || substr(data_agendada, 1, 2)) " +
-                "<= date('now');";
+                "and data_agendada <= date(now());";
 
         ResultSet rs = stmt.executeQuery(query);
 
@@ -219,7 +239,10 @@ public class CategoriaDAO {
             Categoria categoria = new Categoria();
             categoria.setId(rs.getInt("id"));
             categoria.setNome(rs.getString("nome"));
-            categoria.setDataAgendada(rs.getDate("data_agendada").toString());
+            Date dt = sf2.parse(rs.getDate("data_agendada").toString());
+            String nova = sf1.format(dt);
+            
+            categoria.setDataAgendada(nova);
             categoria.setFrequencia_id(rs.getInt("frequencia_id"));
             categoria.setTipo(rs.getString("tipo"));
             categoria.setValor(rs.getFloat("valor"));

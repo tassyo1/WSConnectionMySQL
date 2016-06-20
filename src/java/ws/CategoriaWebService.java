@@ -1,13 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ws;
 
 import bd.Categoria;
 import bd.CategoriaDAO;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.jws.WebMethod;
@@ -31,12 +28,12 @@ public class CategoriaWebService {
     }
 
     @WebMethod(operationName = "inserir")
-    public String inserirCat(@WebParam(name = "tipo") String tipo, @WebParam(name = "nome") String nome, @WebParam(name = "frequencia_id") Integer frequencia_id, @WebParam(name = "data") String data, @WebParam(name = "valor") Float valor) throws ClassNotFoundException, SQLException {
+    public String inserirCat(@WebParam(name = "tipo") String tipo, @WebParam(name = "nome") String nome, @WebParam(name = "frequencia_id") Integer frequencia_id, @WebParam(name = "data") String data, @WebParam(name = "valor") Float valor) throws ClassNotFoundException, SQLException, ParseException {
         return ejbRef.inserirCat(tipo, nome, frequencia_id, data, valor);
     }
 
     @WebMethod(operationName = "atualizar")
-    public String atualizar(@WebParam(name = "id") Integer id, @WebParam(name = "tipo") String tipo, @WebParam(name = "nome") String nome, @WebParam(name = "frequencia_id") Integer frequencia_id, @WebParam(name = "data") String data, @WebParam(name = "valor") Float valor) throws ClassNotFoundException, SQLException {
+    public String atualizar(@WebParam(name = "id") Integer id, @WebParam(name = "tipo") String tipo, @WebParam(name = "nome") String nome, @WebParam(name = "frequencia_id") Integer frequencia_id, @WebParam(name = "data") String data, @WebParam(name = "valor") Float valor) throws ClassNotFoundException, SQLException, ParseException {
         return ejbRef.atualizar(id, tipo, nome, frequencia_id, data, valor);
     }
 
@@ -51,27 +48,27 @@ public class CategoriaWebService {
     }
 
     @WebMethod(operationName = "listaTodasCategorias")
-    public ArrayList<Categoria> listaTodasCategorias() throws SQLException, ClassNotFoundException {
+    public ArrayList<Categoria> listaTodasCategorias() throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.listaTodasCategorias();
     }
 
     @WebMethod(operationName = "buscaPorNome")
-    public Categoria buscaPorNome(@WebParam(name = "nome") String nome) throws SQLException, ClassNotFoundException {
+    public Categoria buscaPorNome(@WebParam(name = "nome") String nome) throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.buscaPorNome(nome);
     }
 
     @WebMethod(operationName = "validaNomeCategoria")
-    public Boolean validaNomeCategoria(@WebParam(name = "nome") String nome, @WebParam(name = "id") Integer id) throws SQLException, ClassNotFoundException {
+    public Boolean validaNomeCategoria(@WebParam(name = "nome") String nome, @WebParam(name = "id") Integer id) throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.validaNomeCategoria(nome, id);
     }
 
     @WebMethod(operationName = "buscaCategoriasEventuais")
-    public ArrayList<Categoria> buscaCategoriasEventuais() throws SQLException {
+    public ArrayList<Categoria> buscaCategoriasEventuais() throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.buscaCategoriasEventuais();
     }
 
     @WebMethod(operationName = "buscaCategoriasFrequentes")
-    public ArrayList<Categoria> buscaCategoriasFrequentes() throws SQLException {
+    public ArrayList<Categoria> buscaCategoriasFrequentes() throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.buscaCategoriasFrequentes();
     }
     

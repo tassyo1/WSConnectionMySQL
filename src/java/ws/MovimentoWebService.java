@@ -8,6 +8,7 @@ package ws;
 import bd.Movimento;
 import bd.MovimentoDAO;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.jws.WebMethod;
@@ -32,12 +33,12 @@ public class MovimentoWebService {
 
     @WebMethod(operationName = "inserir")
     public String inserir(@WebParam(name = "data") String data, @WebParam(name = "saldo")
-            Float saldo_atual, @WebParam(name = "categoria_id") Integer categoria_id) throws SQLException, ClassNotFoundException {
+            Float saldo_atual, @WebParam(name = "categoria_id") Integer categoria_id) throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.inserir(data, saldo_atual, categoria_id);
     }
 
     @WebMethod(operationName = "buscaTodosMovimentos")
-    public ArrayList<Movimento> buscaTodosMovimentos() throws SQLException, ClassNotFoundException {
+    public ArrayList<Movimento> buscaTodosMovimentos() throws SQLException, ClassNotFoundException, ParseException {
         return ejbRef.buscaTodosMovimentos();
     }
 

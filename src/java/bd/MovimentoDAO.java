@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.ejb.Stateless;
 
 /**
@@ -17,21 +20,24 @@ public class MovimentoDAO {
     private Banco banco;
     private Statement stmt;
     private PreparedStatement pstmt;
-    
+    SimpleDateFormat sf1 = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sf2 = new SimpleDateFormat("yyyy-MM-dd");
 
     public void iniciaBanco() throws SQLException, ClassNotFoundException{
         banco = new Banco();
         stmt = banco.getConn().createStatement();
 
     }
-    public String inserir(String data, Float saldo_atual, Integer categoria_id) throws  SQLException, ClassNotFoundException{
+    public String inserir(String data, Float saldo_atual, Integer categoria_id) throws  SQLException, ClassNotFoundException, ParseException{
         this.iniciaBanco();
         pstmt = banco.getConn().prepareStatement("insert into movimentos (data_lancamento, saldo_atual," +
                 " categoria_id ) values(?,?,?)");
 
         long resultado;
 
-        pstmt.setString(1, data);
+        Date dt = sf1.parse(data);
+        String nova = sf2.format(dt);
+        pstmt.setString(1, nova);
         pstmt.setString(2, saldo_atual.toString());
         pstmt.setString(3, categoria_id.toString());
 
@@ -45,21 +51,25 @@ public class MovimentoDAO {
     }
 
     //usado para preencher o grid
-    public ArrayList<Movimento> buscaTodosMovimentos() throws SQLException, ClassNotFoundException{
+    public ArrayList<Movimento> buscaTodosMovimentos() throws SQLException, ClassNotFoundException, ParseException{
         this.iniciaBanco();
         ArrayList<Movimento> movimentos = new ArrayList<Movimento>();
         String query =
-                "SELECT categorias.nome, categorias.valor, data_lancamento, saldo_atual, categorias.tipo FROM movimentos "
-                +"INNER JOIN categorias ON categorias.id = movimentos.categoria_id ORDER BY " +
-                        "date (substr(data_lancamento, 7, 4) || '-' ||"+
-                "substr(data_lancamento, 4, 2) || '-' || substr(data_lancamento, 1, 2)) desc";
+                "SELECT categorias.nome, categorias.valor, data_lancamento, saldo_atual, "
+                + "categorias.tipo FROM movimentos "
+                +"INNER JOIN categorias ON categorias.id = movimentos.categoria_id ORDER BY " 
+                        +"data_lancamento desc";
 
         ResultSet rs = stmt.executeQuery(query);
 
         while (rs.next()) {
 
             Movimento movimento_model = new Movimento();
-            movimento_model.setData_lancamento(rs.getString("data_lancamento"));
+            
+            Date dt = sf2.parse(rs.getDate("data_lancamento").toString());
+            String nova = sf1.format(dt);
+            movimento_model.setData_lancamento(nova);
+            
             movimento_model.setSaldo_atual(rs.getFloat("saldo_atual"));
             movimento_model.setNome_categoria(rs.getString("nome"));
             movimento_model.setValor(rs.getFloat("valor"));
@@ -96,9 +106,8 @@ public class MovimentoDAO {
         this.iniciaBanco();
         Movimento movimento = new Movimento();
         String query = "select distinct categoria_id from movimentos where categoria_id ="+categoria_id+
-                        " and DATE (substr(data_lancamento, 7, 4) || '-' || " +
-                        "substr(data_lancamento, 4, 2) || '-' || substr(data_lancamento, 1, 2)) " +
-                        " <=  date('now');  ";
+                        " and data_lancamento " +
+                          " <=  date(now())  ";
 
         ResultSet rs = stmt.executeQuery(query);
 
