@@ -56,17 +56,19 @@ public class CategoriaDAO {
     public String atualizar(Integer id, String tipo, String nome, Integer frequencia_id, String data, Float valor )
     throws ClassNotFoundException, SQLException, ParseException{
         this.iniciaBanco();
-        pstmt = banco.getConn().prepareStatement("update categorias set tipo =? , set nome =? ," +
-                "set frequencia_id =? , set data_agendada =?, valor =? where id =?");
+        pstmt = banco.getConn().prepareStatement("update categorias set tipo =? , nome =? , " +
+                " frequencia_id =? ,  data_agendada =? , valor =? where id =?");
 
         long resultado;
 
         pstmt.setString(1, tipo);
         pstmt.setString(2, nome);
         pstmt.setString(3, frequencia_id.toString());
+        
         Date dt = sf1.parse(data);
         String nova = sf2.format(dt);
         pstmt.setString(4,nova);
+        
         pstmt.setString(5, valor.toString());
         pstmt.setString(6, id.toString());
 
